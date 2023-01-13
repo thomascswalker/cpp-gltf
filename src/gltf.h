@@ -29,7 +29,7 @@ constexpr auto GL_UNSIGNED_INT = 5125;
 constexpr auto GL_FLOAT = 5126;
 
 // Variant for binary storage types
-typedef std::variant<byte, unsigned_byte, short, unsigned short, unsigned int, float> value_t;
+typedef std::variant<byte, unsigned_byte, short, unsigned short, unsigned int, float> value_t; // NOLINT
 
 // Map of Component Type to number of values expected
 static std::map<std::string, int> GL_COMPONENT_TYPE = {{"SCALAR", 1}, {"VEC2", 2}, {"VEC3", 3}, {"VEC4", 4},
@@ -59,11 +59,33 @@ struct Accessor {
     int type = 0;  // SCALAR, VEC2, VEC3, etc.
 };
 
+struct Texture {
+    int index;
+    int texCoord;
+    std::vector<float> factor;
+};
+
+struct Material {
+    // Base properties
+    std::string name;
+    std::string alphaMode;
+    double alphaCutoff;
+    bool doubleSided;
+
+    // Textures
+    Texture baseColorTexture;
+    Texture normalTexture;
+    Texture metallicRoughnessTexture;
+    Texture occlusionTexture;
+    Texture emissiveTexture;
+};
+
 // Struct for holding abstract Gltf indices, positions, and other data
 template <typename indices_t, typename positions_t>
 struct GltfObject {
     std::vector<indices_t> indices;
     std::vector<positions_t> positions;
+    Material material;
 };
 
 /// <summary>
@@ -142,8 +164,15 @@ Accessor parseAccessor(int index, JSON::JsonObject& json) {
     Accessor accessor;
     auto accessorJson = json["accessors"][index];
 
-    accessor.bufferView = (int)accessorJson["bufferView"];
-    accessor.byteOffset = (int)accessorJson["byteOffset"];
+    std::cout << accessorJson << std::endl;
+
+    if (accessorJson.hasKey("bufferView")) {
+        accessor.bufferView = (int)accessorJson["bufferView"];
+    }
+
+    if (accessorJson.hasKey("byteOffset")) {
+        accessor.byteOffset = (int)accessorJson["byteOffset"];
+    }
 
     if (accessorJson.hasKey("byteStride")) {
         accessor.byteStride = (int)accessorJson["byteStride"];

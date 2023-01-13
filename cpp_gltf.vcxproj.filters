@@ -21,4 +21,7 @@
       <UniqueIdentifier>{AA8F6776-C277-376B-9DAF-E5D0A606EAE9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CppProperties.json" />
+  </ItemGroup>
 </Project>
